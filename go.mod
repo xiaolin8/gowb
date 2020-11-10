@@ -1,4 +1,4 @@
-module github.com/mj37yhyy/gowb
+module github.com/xiaolin8/gowb
 
 go 1.13
 

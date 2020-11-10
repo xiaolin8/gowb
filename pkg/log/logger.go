@@ -2,9 +2,9 @@ package log
 
 import (
 	"context"
-	"github.com/mj37yhyy/gowb/pkg/config"
-	"github.com/mj37yhyy/gowb/pkg/constant"
 	logger "github.com/sirupsen/logrus"
+	"github.com/xiaolin8/gowb/pkg/config"
+	"github.com/xiaolin8/gowb/pkg/constant"
 	"os"
 )
 
