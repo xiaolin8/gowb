@@ -3,8 +3,8 @@ package middleware
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	"github.com/mj37yhyy/gowb/pkg/config"
-	"github.com/mj37yhyy/gowb/pkg/constant"
+	"github.com/xiaolin8/gowb/pkg/config"
+	"github.com/xiaolin8/gowb/pkg/constant"
 )
 
 func Tracing() gin.HandlerFunc {

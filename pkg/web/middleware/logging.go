@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mj37yhyy/gowb/pkg/config"
-	"github.com/mj37yhyy/gowb/pkg/constant"
-	"github.com/mj37yhyy/gowb/pkg/model"
+	"github.com/xiaolin8/gowb/pkg/config"
+	"github.com/xiaolin8/gowb/pkg/constant"
+	"github.com/xiaolin8/gowb/pkg/model"
 
 	"github.com/gin-gonic/gin"
 	logger "github.com/sirupsen/logrus"

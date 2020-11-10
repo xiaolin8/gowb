@@ -3,9 +3,9 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/mj37yhyy/gowb/pkg/config"
-	"github.com/mj37yhyy/gowb/pkg/constant"
-	"github.com/mj37yhyy/gowb/pkg/utils"
+	"github.com/xiaolin8/gowb/pkg/config"
+	"github.com/xiaolin8/gowb/pkg/constant"
+	"github.com/xiaolin8/gowb/pkg/utils"
 	"log"
 	"time"
 
