@@ -157,9 +157,9 @@ func initGin(c context.Context, configs []RouterConfigs) (rr []*gin.Engine) {
 路由
 */
 func router(engines []*gin.Engine, routerConfigs []RouterConfigs) []*gin.Engine {
-	for i, routers := range routerConfigs {
-		baseHandle(engines[i])
-		doHandle(engines[i], routers)
+	for _, routers := range routerConfigs {
+		baseHandle(engines)
+		doHandle(engines, routers)
 	}
 
 	return engines
@@ -168,32 +168,34 @@ func router(engines []*gin.Engine, routerConfigs []RouterConfigs) []*gin.Engine 
 /*
 基础处理
 */
-func baseHandle(r *gin.Engine) {
-	// 404 Handler.
-	r.NoRoute(func(c *gin.Context) {
-		resp := model.Response{}
-		resp.SetError(model.ErrorInfo{
-			Code:    http.StatusText(http.StatusNotFound),
-			Message: "The incorrect API route."})
-		c.JSON(http.StatusNotFound, resp)
-	})
+func baseHandle(rr []*gin.Engine) {
+	for _, r := range rr {
+		// 404 Handler.
+		r.NoRoute(func(c *gin.Context) {
+			resp := model.Response{}
+			resp.SetError(model.ErrorInfo{
+				Code:    http.StatusText(http.StatusNotFound),
+				Message: "The incorrect API route."})
+			c.JSON(http.StatusNotFound, resp)
+		})
 
-	r.GET("/health", func(c *gin.Context) {
-		c.String(http.StatusOK, fmt.Sprintf(time.Now().String()))
-	})
+		r.GET("/health", func(c *gin.Context) {
+			c.String(http.StatusOK, fmt.Sprintf(time.Now().String()))
+		})
 
-	r.GET("/metrics", ginprom.PromHandler(promhttp.Handler()))
-	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+		r.GET("/metrics", ginprom.PromHandler(promhttp.Handler()))
+		r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
 }
 
 /**
 用户函数处理
 */
-func doHandle(r *gin.Engine, routerConfigs RouterConfigs) {
-	for _, router := range routerConfigs.Routers {
+func doHandle(rr []*gin.Engine, routerConfigs RouterConfigs) {
+	for i, router := range routerConfigs.Routers {
 		ch := make(chan int)
 		go func(_router Router) {
-			r.Handle(_router.Method, _router.Path, func(ctx *gin.Context) {
+			rr[i].Handle(_router.Method, _router.Path, func(ctx *gin.Context) {
 				if _router.ReverseProxy {
 					//透传
 					proxy := &httputil.ReverseProxy{Director: router.Director(ctx.Request)}
