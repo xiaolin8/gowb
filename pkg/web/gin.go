@@ -157,8 +157,8 @@ func initGin(c context.Context, configs []RouterConfigs) (rr []*gin.Engine) {
 路由
 */
 func router(engines []*gin.Engine, routerConfigs []RouterConfigs) []*gin.Engine {
-	for _, routers := range routerConfigs {
-		baseHandle(engines)
+	for i, routers := range routerConfigs {
+		baseHandle(engines[i])
 		doHandle(engines, routers)
 	}
 
@@ -168,24 +168,22 @@ func router(engines []*gin.Engine, routerConfigs []RouterConfigs) []*gin.Engine 
 /*
 基础处理
 */
-func baseHandle(rr []*gin.Engine) {
-	for _, r := range rr {
-		// 404 Handler.
-		r.NoRoute(func(c *gin.Context) {
-			resp := model.Response{}
-			resp.SetError(model.ErrorInfo{
-				Code:    http.StatusText(http.StatusNotFound),
-				Message: "The incorrect API route."})
-			c.JSON(http.StatusNotFound, resp)
-		})
+func baseHandle(r *gin.Engine) {
+	// 404 Handler.
+	r.NoRoute(func(c *gin.Context) {
+		resp := model.Response{}
+		resp.SetError(model.ErrorInfo{
+			Code:    http.StatusText(http.StatusNotFound),
+			Message: "The incorrect API route."})
+		c.JSON(http.StatusNotFound, resp)
+	})
 
-		r.GET("/health", func(c *gin.Context) {
-			c.String(http.StatusOK, fmt.Sprintf(time.Now().String()))
-		})
+	r.GET("/health", func(c *gin.Context) {
+		c.String(http.StatusOK, fmt.Sprintf(time.Now().String()))
+	})
 
-		r.GET("/metrics", ginprom.PromHandler(promhttp.Handler()))
-		r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	}
+	r.GET("/metrics", ginprom.PromHandler(promhttp.Handler()))
+	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
 
 /**
