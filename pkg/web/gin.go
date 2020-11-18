@@ -192,13 +192,13 @@ func baseHandle(rr []*gin.Engine) {
 用户函数处理
 */
 func doHandle(rr []*gin.Engine, routerConfigs RouterConfigs) {
-	for i, router := range routerConfigs.Routers {
+	for i := range rr {
 		ch := make(chan int)
 		go func(_router Router) {
 			rr[i].Handle(_router.Method, _router.Path, func(ctx *gin.Context) {
 				if _router.ReverseProxy {
 					//透传
-					proxy := &httputil.ReverseProxy{Director: router.Director(ctx.Request)}
+					proxy := &httputil.ReverseProxy{Director: _router.Director(ctx.Request)}
 					proxy.ServeHTTP(ctx.Writer, ctx.Request)
 				} else {
 					//调用
@@ -212,7 +212,7 @@ func doHandle(rr []*gin.Engine, routerConfigs RouterConfigs) {
 				}
 			})
 			ch <- 0
-		}(router)
+		}(routerConfigs.Routers[i])
 		<-ch
 	}
 }
