@@ -158,12 +158,8 @@ func initGin(c context.Context, configs []RouterConfigs) (rr []*gin.Engine) {
 */
 func router(engines []*gin.Engine, routerConfigs []RouterConfigs) []*gin.Engine {
 	for i, routers := range routerConfigs {
-		for j, engine := range engines {
-			if i == j {
-				baseHandle(engine)
-				doHandle(engine, routers)
-			}
-		}
+		baseHandle(engines[i])
+		doHandle(engines[i], routers)
 	}
 
 	return engines
