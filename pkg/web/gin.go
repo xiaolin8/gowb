@@ -157,9 +157,9 @@ func initGin(c context.Context, configs []RouterConfigs) (rr []*gin.Engine) {
 路由
 */
 func router(engines []*gin.Engine, routerConfigs []RouterConfigs) []*gin.Engine {
-	for i, routers := range routerConfigs {
+	for i := range routerConfigs {
 		baseHandle(engines[i])
-		doHandle(engines, routers)
+		doHandle(engines, routerConfigs)
 	}
 
 	return engines
@@ -189,29 +189,31 @@ func baseHandle(r *gin.Engine) {
 /**
 用户函数处理
 */
-func doHandle(rr []*gin.Engine, routerConfigs RouterConfigs) {
+func doHandle(rr []*gin.Engine, routerConfigs []RouterConfigs) {
 	for i := range rr {
-		ch := make(chan int)
-		go func(_router Router) {
-			rr[i].Handle(_router.Method, _router.Path, func(ctx *gin.Context) {
-				if _router.ReverseProxy {
-					//透传
-					proxy := &httputil.ReverseProxy{Director: _router.Director(ctx.Request)}
-					proxy.ServeHTTP(ctx.Writer, ctx.Request)
-				} else {
-					//调用
-					addBody(ctx)
-					addParams(ctx)
-					addHeader(ctx)
-					addRequest(ctx)
-					addShouldBind(ctx)
-					addBind(ctx)
-					call(_router, ctx)
-				}
-			})
-			ch <- 0
-		}(routerConfigs.Routers[i])
-		<-ch
+		for _, router := range routerConfigs[i].Routers {
+			ch := make(chan int)
+			go func(_router Router) {
+				rr[i].Handle(_router.Method, _router.Path, func(ctx *gin.Context) {
+					if _router.ReverseProxy {
+						//透传
+						proxy := &httputil.ReverseProxy{Director: _router.Director(ctx.Request)}
+						proxy.ServeHTTP(ctx.Writer, ctx.Request)
+					} else {
+						//调用
+						addBody(ctx)
+						addParams(ctx)
+						addHeader(ctx)
+						addRequest(ctx)
+						addShouldBind(ctx)
+						addBind(ctx)
+						call(_router, ctx)
+					}
+				})
+				ch <- 0
+			}(router)
+			<-ch
+		}
 	}
 }
 
