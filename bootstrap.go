@@ -59,7 +59,7 @@ func Bootstrap(g Gowb) (err error) {
 			return err
 		}
 	} else {
-		return errors.New("ConfigName and ConfigType is empty!")
+		return errors.New("configName and configType is empty")
 	}
 	return nil
 }
